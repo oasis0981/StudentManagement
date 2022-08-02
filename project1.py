@@ -2,10 +2,6 @@ f = open("C:/StudentFile/Students.txt")
 lines = f.readlines()
 f.close
 
-# keys = []
-# for i in range(5):
-#    keys.append(lines[i][0:8])
-# print(keys)
 
 StuData = []
 for i in range(5):
@@ -147,14 +143,47 @@ while True:
     if a.upper() == 'SEARCHGRADE':
         grade = ['A', 'B', 'C', 'D', 'F']
         searchGrade = input("Grade to search: ")
-        for i in range(5):
-            if grade[i] == searchGrade:
-                print(strOut)
-                print("-" * 70)
         for i in range(len(StuData)):
             if StuData[i][5] == searchGrade:
-                StuSearchData = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                print(StuSearchData)
-                continue
-            else:
-                print("NO SUCH GRADE")
+                print(strOut)
+                print("-" * 70)
+                break
+        for i in range(5):
+            if grade[i] == searchGrade:
+                for i in range(len(StuData)):
+                    if StuData[i][5] == searchGrade:
+                        break
+                else:
+                    print("NO RESULTS.")
+                for i in range(len(StuData)):
+                    if StuData[i][5] == searchGrade:
+                        StuSearchData = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
+                        print(StuSearchData)
+                        continue
+                    elif StuData[i][5] != searchGrade:
+                        pass
+
+
+    if a.upper() == 'REMOVE':
+        if not StuData:
+            print("List is empty.")
+            break
+        removeID = input("Student ID: ")
+        for i in range(len(StuData)):
+            if StuData[i][0] == removeID:
+                del StuData[i]
+                print("Student removed.")
+                break
+        else:
+            print("NO SUCH PERSON.")
+
+
+    if a.upper() == 'QUIT':
+        saveornot = input("Save data?[yes/no] ")
+        filename = input("File name: ")
+        if saveornot == "yes":
+            StuData.sort(reverse=True, key=lambda x: x[4])
+            with open(filename,'w',encoding='UTF-8') as f:
+                for i in range(len(StuData)):
+                    f.write('\t'.join(map(str,StuData[i]))+'\n')
+        break
