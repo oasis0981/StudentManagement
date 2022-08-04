@@ -68,7 +68,7 @@ while True:
                 testType = input("Mid/Final? ")
                 if testType == 'mid':
                     newScore = input("Input new score: ")
-                    if 0<= int(newScore) <=100:
+                    if 0 <= int(newScore) <=100:
                         print(strOut)
                         print("-" * 70)
                         StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
@@ -90,7 +90,7 @@ while True:
                         print(StuDataOut)
                 elif testType == 'final':
                     newScore = input("Input new score: ")
-                    if 0<= int(newScore) <=100:
+                    if 0 <= int(newScore) <=100:
                         print(strOut)
                         print("-" * 70)
                         StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
@@ -110,6 +110,7 @@ while True:
                         print("Score changed.")
                         StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
                         print(StuDataOut)
+                StuData.sort(reverse=True, key=lambda x: x[4])
                 break
         else:
             print('NO SUCH PERSON.')
@@ -127,18 +128,20 @@ while True:
             NewFinalScore = input("Final Score: ")
             NewStudent = [NewStudentID, NewName, NewMidScore, NewFinalScore]
             NewStudent.append((int(NewStudent[2]) + int(NewStudent[3])) / 2)
-            if NewStudent[4] >= 90:
-                NewStudent.append('A')
-            elif NewStudent[4] >= 80:
-                NewStudent.append('B')
-            elif NewStudent[4] >= 70:
-                NewStudent.append('C')
-            elif NewStudent[4] >= 60:
-                NewStudent.append('D')
-            else:
-                NewStudent.append('F')
-            print("Student added.")
-            StuData.append(NewStudent)
+            if 0 <=int(NewMidScore) <= 100 and 0 <= int(NewFinalScore) <=100:
+                if NewStudent[4] >= 90:
+                    NewStudent.append('A')
+                elif NewStudent[4] >= 80:
+                    NewStudent.append('B')
+                elif NewStudent[4] >= 70:
+                    NewStudent.append('C')
+                elif NewStudent[4] >= 60:
+                    NewStudent.append('D')
+                else:
+                    NewStudent.append('F')
+                print("Student added.")
+                StuData.append(NewStudent)
+            StuData.sort(reverse=True, key=lambda x: x[4])
 
     if a.upper() == 'SEARCHGRADE':
         grade = ['A', 'B', 'C', 'D', 'F']
@@ -180,8 +183,8 @@ while True:
 
     if a.upper() == 'QUIT':
         saveornot = input("Save data?[yes/no] ")
-        filename = input("File name: ")
         if saveornot == "yes":
+            filename = input("File name: ")
             StuData.sort(reverse=True, key=lambda x: x[4])
             with open(filename,'w',encoding='UTF-8') as f:
                 for i in range(len(StuData)):
