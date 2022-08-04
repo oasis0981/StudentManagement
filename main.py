@@ -3,12 +3,50 @@ lines = f.readlines()
 f.close
 
 
+strFormat = '%8s%15s%10s%10s%10s%10s'
+strOut = strFormat % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
+
+
+def printFormat():
+    print(strOut)
+    print("-" * 70)
+def printData():
+    StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
+    print(StuDataOut)
+def avgArr():
+    StuData.sort(reverse=True, key=lambda x: x[4])
+
+
+def grade(avg):
+    if avg >= 90:
+        StuData[i][5] = 'A'
+    elif avg >= 80:
+        StuData[i][5] = 'B'
+    elif avg >= 70:
+        StuData[i][5] = 'C'
+    elif avg >= 60:
+        StuData[i][5] = 'D'
+    else:
+        StuData[i][5] = 'F'
+
+def addgrade(avg,list):
+    if avg >= 90:
+        list.append('A')
+    elif avg >= 80:
+        list.append('B')
+    elif avg >= 70:
+        list.append('C')
+    elif avg >= 60:
+        list.append('D')
+    else:
+        list.append('F')
+
+
 StuData = []
 for i in range(5):
     StuData.append(lines[i].split())
     StuData[i][1] = StuData[i][1] + ' ' + StuData[i][2]
     del StuData[i][2]
-
 
 StuAvg = []
 StuAvg = list(map(float,StuAvg))
@@ -16,45 +54,57 @@ for i in range(5):
     StuAvg.append((int(StuData[i][2]) + int(StuData[i][3])) / 2)
     StuData[i].append(StuAvg[i])
 
-
 StuGrade = []
 for i in range(5):
-    if StuAvg[i] >= 90:
-        StuGrade.append('A')
-    elif StuAvg[i] >= 80:
-        StuGrade.append('B')
-    elif StuAvg[i] >= 70:
-        StuGrade.append('C')
-    elif StuAvg[i] >= 60:
-        StuGrade.append('D')
-    else:
-        StuGrade.append('F')
+    addgrade(StuAvg[i], StuGrade)
     StuData[i].append(StuGrade[i])
 
 
+def show():
+    avgArr()
+    printFormat()
+    for i in range(len(StuData)):
+        printData()
 
-strFormat = '%8s%15s%10s%10s%10s%10s'
-strOut = strFormat % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
+def changeScore(testType):
+    newScore = input("Input new score: ")
+    if 0 <= int(newScore) <= 100:
+        printFormat()
+        printData()
+        StuData[i][testType] = newScore
+        StuData[i][4] = (int(StuData[i][2]) + int(StuData[i][3])) / 2
+        grade(StuData[i][4])
+        print("Score changed.")
+        printData()
+
+
+def search():
+    for i in range(len(StuData)):
+        if StuData[i][0] == StudentID:
+            printFormat()
+            printData()
+            break
+    else:
+        print("NO SUCH STUDENT.")
+
+
+
 
 while True:
     a = input()
     if a.upper() == 'SHOW':
-        StuData.sort(reverse=True, key=lambda x: x[4])
-        print(strOut)
-        print("-" * 70)
+        avgArr()
+        printFormat()
         for i in range(len(StuData)):
-            StuDataOut = strFormat % (StuData[i][0],StuData[i][1],StuData[i][2],StuData[i][3],StuData[i][4],StuData[i][5])
-            print(StuDataOut)
-
+            printData()
+        show()
 
     if a.upper() == 'SEARCH':
         StudentID = input("Student ID: ")
         for i in range(len(StuData)):
             if StuData[i][0] == StudentID:
-                print(strOut)
-                print("-" * 70)
-                StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                print(StuDataOut)
+                printFormat()
+                printData()
                 break
         else:
             print("NO SUCH STUDENT.")
@@ -67,50 +117,10 @@ while True:
             if StuData[i][0] == StudentID:
                 testType = input("Mid/Final? ")
                 if testType == 'mid':
-                    newScore = input("Input new score: ")
-                    if 0 <= int(newScore) <=100:
-                        print(strOut)
-                        print("-" * 70)
-                        StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                        print(StuDataOut)
-                        StuData[i][2] = newScore
-                        StuData[i][4] = (int(StuData[i][2]) + int(StuData[i][3])) / 2
-                        if StuData[i][4] >= 90:
-                            StuData[i][5] = 'A'
-                        elif StuData[i][4] >= 80:
-                            StuData[i][5] = 'B'
-                        elif StuData[i][4] >= 70:
-                            StuData[i][5] = 'C'
-                        elif StuData[i][4] >= 60:
-                            StuData[i][5] = 'D'
-                        else:
-                            StuData[i][5] = 'F'
-                        print("Score changed.")
-                        StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                        print(StuDataOut)
+                    changeScore(2)
                 elif testType == 'final':
-                    newScore = input("Input new score: ")
-                    if 0 <= int(newScore) <=100:
-                        print(strOut)
-                        print("-" * 70)
-                        StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                        print(StuDataOut)
-                        StuData[i][3] = newScore
-                        StuData[i][4] = (int(StuData[i][2]) + int(StuData[i][3])) / 2
-                        if StuData[i][4] >= 90:
-                            StuData[i][5] = 'A'
-                        elif StuData[i][4] >= 80:
-                            StuData[i][5] = 'B'
-                        elif StuData[i][4] >= 70:
-                            StuData[i][5] = 'C'
-                        elif StuData[i][4] >= 60:
-                            StuData[i][5] = 'D'
-                        else:
-                            StuData[i][5] = 'F'
-                        print("Score changed.")
-                        StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                        print(StuDataOut)
-                StuData.sort(reverse=True, key=lambda x: x[4])
+                    changeScore(3)
+                avgArr()
                 break
         else:
             print('NO SUCH PERSON.')
@@ -129,27 +139,17 @@ while True:
             NewStudent = [NewStudentID, NewName, NewMidScore, NewFinalScore]
             NewStudent.append((int(NewStudent[2]) + int(NewStudent[3])) / 2)
             if 0 <=int(NewMidScore) <= 100 and 0 <= int(NewFinalScore) <=100:
-                if NewStudent[4] >= 90:
-                    NewStudent.append('A')
-                elif NewStudent[4] >= 80:
-                    NewStudent.append('B')
-                elif NewStudent[4] >= 70:
-                    NewStudent.append('C')
-                elif NewStudent[4] >= 60:
-                    NewStudent.append('D')
-                else:
-                    NewStudent.append('F')
+                addgrade(NewStudent[4],NewStudent)
                 print("Student added.")
                 StuData.append(NewStudent)
-            StuData.sort(reverse=True, key=lambda x: x[4])
+            avgArr()
 
     if a.upper() == 'SEARCHGRADE':
         grade = ['A', 'B', 'C', 'D', 'F']
         searchGrade = input("Grade to search: ")
         for i in range(len(StuData)):
             if StuData[i][5] == searchGrade:
-                print(strOut)
-                print("-" * 70)
+                printFormat()
                 break
         for i in range(5):
             if grade[i] == searchGrade:
@@ -160,8 +160,7 @@ while True:
                     print("NO RESULTS.")
                 for i in range(len(StuData)):
                     if StuData[i][5] == searchGrade:
-                        StuSearchData = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-                        print(StuSearchData)
+                        printData()
                         continue
                     elif StuData[i][5] != searchGrade:
                         pass
@@ -183,7 +182,7 @@ while True:
 
     if a.upper() == 'QUIT':
         saveornot = input("Save data?[yes/no] ")
-        if saveornot == "yes":
+        if saveornot.upper == "yes":
             filename = input("File name: ")
             StuData.sort(reverse=True, key=lambda x: x[4])
             with open(filename,'w',encoding='UTF-8') as f:
