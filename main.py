@@ -6,30 +6,32 @@ f.close
 strFormat = '%8s%15s%10s%10s%10s%10s'
 strOut = strFormat % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
 
+stuData = []
+for i in range(5):
+    stuData.append(lines[i].split())
+    stuData[i][1] = stuData[i][1] + ' ' + stuData[i][2]
+    del stuData[i][2]
 
-def printFormat():
-    print(strOut)
-    print("-" * 70)
-def printData():
-    StuDataOut = strFormat % (StuData[i][0], StuData[i][1], StuData[i][2], StuData[i][3], StuData[i][4], StuData[i][5])
-    print(StuDataOut)
-def avgArr():
-    StuData.sort(reverse=True, key=lambda x: x[4])
+stuAvg = []
+stuAvg = list(map(float,stuAvg))
+for i in range(5):
+    stuAvg.append((int(stuData[i][2]) + int(stuData[i][3])) / 2)
+    stuData[i].append(stuAvg[i])
 
 
 def grade(avg):
     if avg >= 90:
-        StuData[i][5] = 'A'
+        stuData[i][5] = 'A'
     elif avg >= 80:
-        StuData[i][5] = 'B'
+        stuData[i][5] = 'B'
     elif avg >= 70:
-        StuData[i][5] = 'C'
+        stuData[i][5] = 'C'
     elif avg >= 60:
-        StuData[i][5] = 'D'
+        stuData[i][5] = 'D'
     else:
-        StuData[i][5] = 'F'
+        stuData[i][5] = 'F'
 
-def addgrade(avg,list):
+def add_grade(avg,list):
     if avg >= 90:
         list.append('A')
     elif avg >= 80:
@@ -41,151 +43,150 @@ def addgrade(avg,list):
     else:
         list.append('F')
 
-
-StuData = []
+stuGrade = []
 for i in range(5):
-    StuData.append(lines[i].split())
-    StuData[i][1] = StuData[i][1] + ' ' + StuData[i][2]
-    del StuData[i][2]
+    add_grade(stuAvg[i], stuGrade)
+    stuData[i].append(stuGrade[i])
 
-StuAvg = []
-StuAvg = list(map(float,StuAvg))
-for i in range(5):
-    StuAvg.append((int(StuData[i][2]) + int(StuData[i][3])) / 2)
-    StuData[i].append(StuAvg[i])
-
-StuGrade = []
-for i in range(5):
-    addgrade(StuAvg[i], StuGrade)
-    StuData[i].append(StuGrade[i])
+def print_format():
+    print(strOut)
+    print("-" * 70)
+def print_data(i):
+    stuDataOut = strFormat % (stuData[i][0], stuData[i][1], stuData[i][2], stuData[i][3], stuData[i][4], stuData[i][5])
+    print(stuDataOut)
+def avg_arr():
+    stuData.sort(reverse=True, key=lambda x: x[4])
 
 
 def show():
-    avgArr()
-    printFormat()
-    for i in range(len(StuData)):
-        printData()
+    avg_arr()
+    print_format()
+    for i in range(len(stuData)):
+        print_data(i)
 
-def changeScore(testType):
+
+def change_score(testType):
     newScore = input("Input new score: ")
     if 0 <= int(newScore) <= 100:
-        printFormat()
-        printData()
-        StuData[i][testType] = newScore
-        StuData[i][4] = (int(StuData[i][2]) + int(StuData[i][3])) / 2
-        grade(StuData[i][4])
+        print_format()
+        print_data(i)
+        stuData[i][testType] = newScore
+        stuData[i][4] = (int(stuData[i][2]) + int(stuData[i][3])) / 2
+        grade(stuData[i][4])
         print("Score changed.")
-        printData()
+        print_data(i)
 
 
 def search():
-    for i in range(len(StuData)):
-        if StuData[i][0] == StudentID:
-            printFormat()
-            printData()
+    for i in range(len(stuData)):
+        if stuData[i][0] == studentID:
+            print_format()
+            print_data(i)
             break
     else:
         print("NO SUCH STUDENT.")
 
 
+def add():
+    for i in range(len(stuData)):
+        if stuData[i][0] == newStudentID:
+            print('ALREADY EXISTS.')
+            break
+    else:
+        newName = input("Name: ")
+        newMidScore = input("Midterm Score: ")
+        newFinalScore = input("Final Score: ")
+        newStudent = [newStudentID, newName, newMidScore, newFinalScore]
+        newStudent.append((int(newStudent[2]) + int(newStudent[3])) / 2)
+        if 0 <= int(newMidScore) <= 100 and 0 <= int(newFinalScore) <= 100:
+            add_grade(newStudent[4], newStudent)
+            print("Student added.")
+            stuData.append(newStudent)
+        avg_arr()
 
+def search_grade():
+    grade = ['A', 'B', 'C', 'D', 'F']
+    for i in range(len(stuData)):
+        if stuData[i][5] == searchGrade:
+            print_format()
+            break
+    for i in range(5):
+        if grade[i] == searchGrade:
+            for i in range(len(stuData)):
+                if stuData[i][5] == searchGrade:
+                    break
+            else:
+                print("NO RESULTS.")
+            for i in range(len(stuData)):
+                if stuData[i][5] == searchGrade:
+                    print_data(i)
+                    continue
+                elif stuData[i][5] != searchGrade:
+                    pass
+
+def remove():
+    removeID = input("Student ID: ")
+    for i in range(len(stuData)):
+        if stuData[i][0] == removeID:
+            del stuData[i]
+            print("Student removed.")
+            break
+    else:
+        print("NO SUCH PERSON.")
+
+
+def quit():
+    filename = input("File name: ")
+    avg_arr()
+    with open(filename, 'w', encoding='UTF-8') as f:
+        for i in range(len(stuData)):
+            f.write('\t'.join(map(str, stuData[i])) + '\n')
 
 while True:
     a = input()
     if a.upper() == 'SHOW':
-        avgArr()
-        printFormat()
-        for i in range(len(StuData)):
-            printData()
         show()
 
-    if a.upper() == 'SEARCH':
-        StudentID = input("Student ID: ")
-        for i in range(len(StuData)):
-            if StuData[i][0] == StudentID:
-                printFormat()
-                printData()
-                break
-        else:
-            print("NO SUCH STUDENT.")
 
+    if a.upper() == 'SEARCH':
+        studentID = input("Student ID: ")
+        search()
 
 
     if a.upper() == 'CHANGESCORE':
-        StudentID = input("Student ID: ")
-        for i in range(len(StuData)):
-            if StuData[i][0] == StudentID:
+        studentID = input("Student ID: ")
+        for i in range(len(stuData)):
+            if stuData[i][0] == studentID:
                 testType = input("Mid/Final? ")
                 if testType == 'mid':
-                    changeScore(2)
+                    change_score(2)
                 elif testType == 'final':
-                    changeScore(3)
-                avgArr()
+                    change_score(3)
+                avg_arr()
                 break
         else:
             print('NO SUCH PERSON.')
 
 
     if a.upper() == 'ADD':
-        NewStudentID = input("Student ID: ")
-        for i in range(len(StuData)):
-            if StuData[i][0] == NewStudentID:
-                print('ALREADY EXISTS.')
-                break
-        else:
-            NewName = input("Name: ")
-            NewMidScore = input("Midterm Score: ")
-            NewFinalScore = input("Final Score: ")
-            NewStudent = [NewStudentID, NewName, NewMidScore, NewFinalScore]
-            NewStudent.append((int(NewStudent[2]) + int(NewStudent[3])) / 2)
-            if 0 <=int(NewMidScore) <= 100 and 0 <= int(NewFinalScore) <=100:
-                addgrade(NewStudent[4],NewStudent)
-                print("Student added.")
-                StuData.append(NewStudent)
-            avgArr()
+        newStudentID = input("Student ID: ")
+        add()
+
 
     if a.upper() == 'SEARCHGRADE':
-        grade = ['A', 'B', 'C', 'D', 'F']
         searchGrade = input("Grade to search: ")
-        for i in range(len(StuData)):
-            if StuData[i][5] == searchGrade:
-                printFormat()
-                break
-        for i in range(5):
-            if grade[i] == searchGrade:
-                for i in range(len(StuData)):
-                    if StuData[i][5] == searchGrade:
-                        break
-                else:
-                    print("NO RESULTS.")
-                for i in range(len(StuData)):
-                    if StuData[i][5] == searchGrade:
-                        printData()
-                        continue
-                    elif StuData[i][5] != searchGrade:
-                        pass
+        search_grade()
 
 
     if a.upper() == 'REMOVE':
-        if not StuData:
+        if not stuData:
             print("List is empty.")
             break
-        removeID = input("Student ID: ")
-        for i in range(len(StuData)):
-            if StuData[i][0] == removeID:
-                del StuData[i]
-                print("Student removed.")
-                break
-        else:
-            print("NO SUCH PERSON.")
+        remove()
 
 
     if a.upper() == 'QUIT':
-        saveornot = input("Save data?[yes/no] ")
-        if saveornot.upper == "yes":
-            filename = input("File name: ")
-            StuData.sort(reverse=True, key=lambda x: x[4])
-            with open(filename,'w',encoding='UTF-8') as f:
-                for i in range(len(StuData)):
-                    f.write('\t'.join(map(str,StuData[i]))+'\n')
+        saveOrNot = input("Save data?[yes/no] ")
+        if saveOrNot.upper() == "YES":
+            quit()
         break
