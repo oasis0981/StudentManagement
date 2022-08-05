@@ -1,23 +1,4 @@
-f = open("C:/StudentFile/Students.txt")
-lines = f.readlines()
-f.close
-
-
-strFormat = '%8s%15s%10s%10s%10s%10s'
-strOut = strFormat % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
-
-stuData = []
-for i in range(5):
-    stuData.append(lines[i].split())
-    stuData[i][1] = stuData[i][1] + ' ' + stuData[i][2]
-    del stuData[i][2]
-
-stuAvg = []
-stuAvg = list(map(float,stuAvg))
-for i in range(5):
-    stuAvg.append((int(stuData[i][2]) + int(stuData[i][3])) / 2)
-    stuData[i].append(stuAvg[i])
-
+STR_FORMAT = '%8s%15s%10s%10s%10s%10s'
 
 def grade(avg):
     if avg >= 90:
@@ -43,17 +24,13 @@ def add_grade(avg,list):
     else:
         list.append('F')
 
-stuGrade = []
-for i in range(5):
-    add_grade(stuAvg[i], stuGrade)
-    stuData[i].append(stuGrade[i])
-
 def print_format():
-    print(strOut)
+    str_out = STR_FORMAT % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
+    print(str_out)
     print("-" * 70)
 def print_data(i):
-    stuDataOut = strFormat % (stuData[i][0], stuData[i][1], stuData[i][2], stuData[i][3], stuData[i][4], stuData[i][5])
-    print(stuDataOut)
+    stu_data_out = STR_FORMAT % (stuData[i][0], stuData[i][1], stuData[i][2], stuData[i][3], stuData[i][4], stuData[i][5])
+    print(stu_data_out)
 def avg_arr():
     stuData.sort(reverse=True, key=lambda x: x[4])
 
@@ -65,16 +42,45 @@ def show():
         print_data(i)
 
 
-def change_score(testType):
-    newScore = input("Input new score: ")
-    if 0 <= int(newScore) <= 100:
-        print_format()
-        print_data(i)
-        stuData[i][testType] = newScore
-        stuData[i][4] = (int(stuData[i][2]) + int(stuData[i][3])) / 2
-        grade(stuData[i][4])
-        print("Score changed.")
-        print_data(i)
+def change_score(test_type, new_score):
+    stuData[i][test_type] = new_score
+    stuData[i][4] = (int(stuData[i][2]) + int(stuData[i][3])) / 2
+    grade(stuData[i][4])
+
+def a_score_print():
+    print_format()
+    print_data(i)
+
+def change_score_input():
+    studentID = input("Student ID: ")
+    for i in range(len(stuData)):
+        if stuData[i][0] == studentID:
+            test_type = input("Mid/Final? ")
+            if test_type == 'mid':
+                return 'mid'
+            elif test_type == 'final':
+                return 'final'
+
+
+def run_change_score():
+    change_score_input()
+    if 'mid' == True:
+        new_score = input("Input new score: ")
+        if 0 <= int(new_score) <= 100:
+            a_score_print()
+            change_score(2, new_score)
+            print("Score changed.")
+            print_data(i)
+    elif 'final' == True:
+        new_score = input("Input new score: ")
+        if 0 <= int(new_score) <= 100:
+            a_score_print()
+            change_score(3, new_score)
+            print("Score changed.")
+            print_data(i)
+
+
+
 
 
 def search():
@@ -85,7 +91,6 @@ def search():
             break
     else:
         print("NO SUCH STUDENT.")
-
 
 def add():
     for i in range(len(stuData)):
@@ -134,13 +139,27 @@ def remove():
     else:
         print("NO SUCH PERSON.")
 
-
 def quit():
     filename = input("File name: ")
     avg_arr()
     with open(filename, 'w', encoding='UTF-8') as f:
         for i in range(len(stuData)):
             f.write('\t'.join(map(str, stuData[i])) + '\n')
+
+
+f = open("C:/StudentFile/Students.txt")
+lines = f.readlines()
+f.close
+
+stuData = []
+for i in range(len(lines)):
+    stuData.append(lines[i].split())
+    stuData[i][1] = (stuData[i][1] + ' ' + stuData[i][2])
+    del stuData[i][2]
+    stuData[i].append((int(stuData[i][2]) + int(stuData[i][3])) / 2)
+    add_grade(stuData[i][4], stuData[i])
+
+
 
 while True:
     a = input()
@@ -154,18 +173,22 @@ while True:
 
 
     if a.upper() == 'CHANGESCORE':
-        studentID = input("Student ID: ")
-        for i in range(len(stuData)):
-            if stuData[i][0] == studentID:
-                testType = input("Mid/Final? ")
-                if testType == 'mid':
-                    change_score(2)
-                elif testType == 'final':
-                    change_score(3)
-                avg_arr()
-                break
-        else:
-            print('NO SUCH PERSON.')
+        run_change_score()
+
+
+
+
+        # for i in range(len(stuData)):
+        #     if stuData[i][0] == studentID:
+        #         testType = input("Mid/Final? ")
+        #         if testType == 'mid':
+        #             change_score(2)
+        #         elif testType == 'final':
+        #             change_score(3)
+        #         avg_arr()
+        #         break
+        # else:
+        #     print('NO SUCH PERSON.')
 
 
     if a.upper() == 'ADD':
@@ -190,3 +213,7 @@ while True:
         if saveOrNot.upper() == "YES":
             quit()
         break
+
+
+# if __name__ == "__main__":
+#     print('hello world')
