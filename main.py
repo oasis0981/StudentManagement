@@ -1,131 +1,113 @@
+from enum import Enum
+
 STR_FORMAT = '%8s%15s%10s%10s%10s%10s'
 
-def grade(avg):
-    if avg >= 90:
-        stuData[i][5] = 'A'
-    elif avg >= 80:
-        stuData[i][5] = 'B'
-    elif avg >= 70:
-        stuData[i][5] = 'C'
-    elif avg >= 60:
-        stuData[i][5] = 'D'
-    else:
-        stuData[i][5] = 'F'
+class Student:
+    def __init__(self, info):
+        self.id = info[0] #id는 필드
+        self.name = info[1]
+        self.mid = info[2]
+        self.final = info[3]
+        self.calculate_average()
 
-def add_grade(avg,list):
-    if avg >= 90:
-        list.append('A')
-    elif avg >= 80:
-        list.append('B')
-    elif avg >= 70:
-        list.append('C')
-    elif avg >= 60:
-        list.append('D')
-    else:
-        list.append('F')
+    def set_score(self, type, new_score):
+        if type == "mid":
+            self.mid = new_score
+        elif type == "final":
+            self.final = new_score
+        self.calculate_average()
 
-def print_format():
-    str_out = STR_FORMAT % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
-    print(str_out)
-    print("-" * 70)
+    def calculate_average(self):
+        self.average = (int(self.mid) + int(self.final)) / 2
+        self.calculate_grade()
 
-def print_data(indexes):
+    def calculate_grade(self):
+        if self.average >= 90:
+            self.grade = 'A'
+        elif self.average >= 80:
+            self.grade = 'B'
+        elif self.average >= 70:
+            self.grade = 'C'
+        elif self.average >= 60:
+            self.grade = 'D'
+        else:
+            self.grade = 'F'
+
+def change_score(index, test_type, score):
+    for i in index:
+        stuData[i].set_score(test_type, score)
+
+def get_info(words):
+    input_info = input(words)
+    return input_info
+
+def print_data(print_format, indexes):
+    if print_format == True:
+        str_out = STR_FORMAT % ("Student", "Name", "Midterm", "Final", "Average", "Grade")
+        print(str_out)
+        print("-" * 70)
     for i in indexes:
-        stu_data_out = STR_FORMAT % (stuData[i][0], stuData[i][1], stuData[i][2], stuData[i][3], stuData[i][4], stuData[i][5])
+        stu_data_out = STR_FORMAT % (stuData[i].id, stuData[i].name, stuData[i].mid, stuData[i].final, stuData[i].average, stuData[i].grade)
         print(stu_data_out)
 
 def avg_arr():
-    stuData.sort(reverse=True, key=lambda x: x[4])
+    stuData.sort(reverse=True, key=lambda x: x.average)
 
-def search(target, by):
-    result = []
-    for i in range(len(stuData)):
-        if stuData[i][by] == target:
-            result.append(i)
-    return result
-
+def search(target, byID):
+    return list(filter(lambda x: (stuData[x].id if byID else stuData[x].grade) == target, range(len(stuData))))
 
 def run_show():
     avg_arr()
-    print_format()
-    print_data(list(range(len(stuData))))
+    print_data(True, list(range(len(stuData))))
 
 def run_search():
-    studentID = input("Student ID: ")
-    a = search(studentID, 0)
+    student_id = get_info("Student ID: ")
+    result = search(student_id, byID=True)
     if len(a) > 0:
-        print_format()
-        print_data(a)
-
+        print_data(print_format=True, indexes=result) #나중에 순서 바꿔서 고치기
     else:
         print("NO SUCH STUDENT.")
 
 def run_change_score():
-    def change_score(test_type, new_score):
-        stuData[i][test_type] = new_score
-        stuData[i][4] = (int(stuData[i][2]) + int(stuData[i][3])) / 2
-        grade(stuData[i][4])
+    student_id = get_info("Student ID: ")
+    result = search(student_id, byID=True)
+    if len(result) > 0:
+        test_type = get_info("mid/final? ")
+        if test_type == "mid" or test_type == "final":
+            new_score = get_info("Input new score: ")
+            if 0 <= int(new_score) <= 100:
+                print_data(True, result)
+                change_score(result, test_type, new_score)
+                print("Score changed.")
+                print_data(False, result)
+    else:
+        print("NO SUCH PERSON.")
 
-    def a_score_print(i):
-        print_format()
-        print_data(i)
-
-    def change_score_input():
-        studentID = input("Student ID: ")
-        result = search(studentID, 0)
-        if len(result) > 0:
-            test_type_input = input("Mid/Final? ")
-            if test_type_input == 'mid':
-                return 2
-            elif test_type_input == 'final':
-                return 3
-        else:
-            print("NO SUCH PERSON.")
-
-    test_type = change_score_input()
-    if test_type == 2 or test_type == 3:
-        new_score = input("Input new score: ")
-        if 0 <= int(new_score) <= 100:
-            a_score_print()
-            change_score(test_type, new_score)
-            print("Score changed.")
-            print_data(i)
 
 def run_add():
-    new_student_id = input("Student ID: ")
-    new_student_data = []
-
-    def add_new_data_list(list):
-        list.append(new_student_id)
-        list.append(input("Name: "))
-        list.append(input("Midterm Score: "))
-        list.append(input("Final Score: "))
-        list.append((int(list[2]) + int(list[3])) / 2)
-
-    result = search(new_student_id, 0)
+    new_student_id = get_info("Student ID: ")
+    result = search(new_student_id, byID=True)
     if len(result) > 0:
         print('ALREADY EXISTS.')
     else:
-        add_new_data_list(new_student_data)
-        if 0 <= int(new_student_data[2]) <= 100 and 0 <= int(new_student_data[3]) <= 100:
-            add_grade(new_student_data[4], new_student_data)
+        new_student = Student([new_student_id, get_info("Name: "), get_info("Midterm Score: "), get_info("Final Score: ")])
+        if 0 <= int(new_student.mid) <= 100 and 0 <= int(new_student.final) <= 100:
             print("Student added.")
-            stuData.append(new_student_data)
-        avg_arr()
+            stuData.append(new_student)
+            avg_arr()
 
 def run_search_grade():
     grade_to_search = input("Grade to search: ")
-    result = search(grade_to_search, 5)
+    result = search(grade_to_search, byID=False)
     if len(result) > 0:
-        print_format()
-        print_data(result)
+        print_data(True, result)
     else:
         print("NO RESULTS.")
 
 
 def run_remove():
     removeID = input("Student ID: ")
-    result = search(removeID, 0)
+    result = search(removeID, byID=True)
     if len(result) > 0:
         for i in result:
             del stuData[i]
@@ -147,10 +129,11 @@ lines = list(map(lambda s: s.strip(), lines))
 f.close
 
 stuData = []
-for i in range(len(lines)):
-    stuData.append(lines[i].split("\t"))
-    stuData[i].append((int(stuData[i][2]) + int(stuData[i][3])) / 2)
-    add_grade(stuData[i][4], stuData[i])
+for line in lines:
+    splitted = line.split("\t")
+    stuData.append(Student(splitted))
+
+
 
 while True:
     a = input("# ")
